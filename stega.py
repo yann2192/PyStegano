@@ -27,9 +27,9 @@ class stega:
         return res
 
     def encode(self, pixel, bytes):
-        if len(pixel) < (len(bytes)+2)*8: raise Exception, "Image too short"
+        if len(pixel) < (len(bytes)+4)*8: raise Exception, "Image too short"
         bits = self.bytestobits(bytes)
-        bits = self.bytestobits(pack('!H', len(bits))) + bits
+        bits = self.bytestobits(pack('!I', len(bits))) + bits
         output = []
         for i in range(len(bits)):
             output.append((pixel[i] & 0xFE) | bits[i])
@@ -39,11 +39,11 @@ class stega:
 
     def decode(self, pixel):
         raw = []
-        for i in range(16):
+        for i in range(32):
             raw.append(pixel[i] & 1)
-        size = unpack('!H', self.bitstobytes(raw))[0]
+        size = unpack('!I', self.bitstobytes(raw))[0]
         raw = []
-        for i in range(16, size+16):
+        for i in range(32, size+32):
             raw.append(pixel[i] & 1)
         return self.bitstobytes(raw)
 
