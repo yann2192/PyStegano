@@ -76,7 +76,11 @@ if __name__ == '__main__':
             ctx = aes(getpass('key : '), iv, 1, mode='cfb')
             sys.stdout.write('> ')
             sys.stdout.flush()
-            plain = sys.stdin.read()
+            if len(sys.argv) == 5:
+                with open(sys.argv[4], 'rb') as f:
+                    plain = f.read()
+            else:
+                plain = sys.stdin.read()
             print "[+] Encrypt and Encode ..."
             ciphertext = ctx.ciphering(plain)
             stega().put(sys.argv[2], sys.argv[3], iv+ciphertext+sha256(plain).digest())
@@ -93,5 +97,9 @@ if __name__ == '__main__':
             plain = ctx.ciphering(ciphertext[:len(ciphertext)-32])
             if sha256(plain).digest() != ciphertext[len(ciphertext)-32:]:
                 raise Exception, "[!] Fail to decode/decrypt ..."
-            print plain
+            if len(sys.argv) == 4:
+                with open(sys.argv[3], 'wb') as f:
+                    f.write(plain)
+            else:
+                print plain
     else: usage()
